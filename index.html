@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
+    <style>
+.mask{
+    left: 0;
+    top: 0;
+    bottom:0;
+    right:0;
+    position: fixed;
+    z-index: 99999;
+    background: rgba(0,0,0,0.6);
+}
+/* <html>標籤要用的樣式 ，跟窗口一樣大，內容超出隱藏，避免出現滾動條 */
+.htmlMask{
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+</style>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | Interaction with browser scripting</title>
@@ -27,12 +44,47 @@
       function myFunction() {
         
         (async function () {
-        await CefSharp.BindObjectAsync("indexViewBinding");
-
-        var result = await window.indexViewBinding.add(5, 8);
-
-        alert(result);
+            await CefSharp.BindObjectAsync("indexViewBinding");
+            createMask();
+            var result = await window.indexViewBinding.add(5, 8);
+            deleteMask();
+            alert(result);
         })();
+        
+        
+        
+        let btn = document.getElementById("btn");
+        /*
+        *  生成 mask
+        *  */
+        let createMask = ()=>{
+            // 如果 mask 已經存在了，就不用再創建mask了
+            if( document.getElementById("mask")){
+                return true;
+            }
+            let  mask = document.createElement("div");
+                mask.id = "mask";
+                mask.className = "mask";
+            // 把 mask 添加到body 裏。
+            document.body.appendChild( mask );
+            // 控制 <html> 標籤的樣式
+            document.documentElement.classList.add("htmlMask");
+        };
+        /*
+        * 刪除 mask
+        * */
+        let  deleteMask = ()=>{
+            let  mask ;
+            // 如果 mask 存在，就刪除
+            if( mask = document.getElementById("mask")){
+                // 移除 mask 上的點擊事件
+                mask.removeEventListener("click", deleteMask );
+                // 刪除 mask 標籤
+                mask.parentNode.removeChild( mask );
+                // 去掉 <html> 標籤的特定樣式
+                document.documentElement.classList.remove("htmlMask");
+            }
+        };
 
 
     }
